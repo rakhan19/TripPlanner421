@@ -36,20 +36,20 @@ app.config["MONGO_URI"] = MONGO_URI
 app.config["SECRET_KEY"] = SECRET_KEY
 
 # Create a new client and connect to the server
-client = MongoClient("localhost", 27017, username="username", password="password")
-# client = MongoClient('MONGO_URI', server_api=ServerApi("1"))
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 
 # Send a ping to confirm a successful connection
-# try:
-#     client.admin.command("ping")
-#     print("Pinged your deployment. You successfully connected to MongoDB!")
-#     mongo = client
-#     users_collection = mongo.db.users
-# except Exception as e:
-#     print("Failed to connect to MongoDB.")
-#     print(e)
-#     mongo = None
-#     users_collection = None
+try:
+    client.admin.command("ping")
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+    mongo = client
+    db = mongo.trip_planner_db
+    users_collection = db.users
+except Exception as e:
+    print("Failed to connect to MongoDB.")
+    print(e)
+    mongo = None
+    users_collection = None
 
 
 def token_required(f):
