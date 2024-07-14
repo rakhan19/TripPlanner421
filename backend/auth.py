@@ -25,6 +25,29 @@ def token_required(f):
     return decorated
 
 
+def register_test(db, data):
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+
+    if not username or not password or not email:
+        return {'status_code': 400, 'json': {"error": "Invalid input"}}
+
+    if db.users.find_one({"username": username}):
+        return {'status_code': 400, 'json': {"error": "User already exists"}}
+
+    hashed_password = generate_password_hash(password)
+    user_id = db.users.insert_one(
+        {
+            "username": username,
+            "password": hashed_password,
+            "email": email,
+            "profile": {"name": "", "age": 0, "gender": "", "past_trips": []},
+        }
+    ).inserted_id
+
+    return {'status_code': 201, 'json': {"message": "User registered successfully", "user_id": str(user_id)}}
+
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -44,7 +67,7 @@ def register():
             "username": username,
             "password": hashed_password,
             "email": email,
-            "profile": {"name": "", "age": 0, "gender": "", "past_trips": []},
+            "profile": {"name": "", "past_trips": []},
         }
     ).inserted_id
 
@@ -53,6 +76,23 @@ def register():
         201,
     )
 
+def login_test(db, data):
+    username = data.get("username")
+    password = data.get("password")
+    
+    user = db.users.find_one({"username": username})
+    
+    if user and check_password_hash(user["password"], password):
+        token = jwt.encode(
+            {
+                "username": user["username"],
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+            },
+            os.getenv("SECRET_KEY"),
+            algorithm="HS256",
+        )
+        return {"status_code": 200, "json": {"token": token}}
+    return {"status_code": 401, "json": {"error": "Invalid username or password"}}
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
