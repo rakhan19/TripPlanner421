@@ -1,7 +1,14 @@
 {% extends "base0.html"%}
 
 {% block content %}
-        <h2>User name and password authentification</h2>
-        <button type="button" class="btn btn-info"><a href="{{url_for('mainpage')}}">Log In</a></button>
-        <h3>Not signed up? <a href="{{url_for('signup')}}">Sign up</a> here</h3>
+        <h2>User name and password authentication</h2>
+        <form action="{{ url_for('auth.login') }}" method="POST">
+
+        <label for="username">Username</label>
+        <input type="text" name="username" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+        <button type="submit" class="btn btn-info">Log In</button>
+        </form>
+        <h3>Not signed up? <a href="{{url_for('auth.register')}}">Sign up</a> here</h3>
 {% endblock %}
