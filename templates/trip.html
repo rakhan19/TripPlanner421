@@ -1,14 +1,46 @@
-{% extends "base1.html"%}
+{% extends "base1.html" %}
 
 {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <ul class="navbar-nav">
-      <a class="nav-link" href="{{url_for('chat')}}">Chat <span class="sr-only"></span></a>
-      <a class="nav-link" href="{{url_for('budget')}}">Budget <span class="sr-only"></span></a>
+    <li class="nav-item">
+      <a class="nav-link" href="{{url_for('chat')}}">Chat</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{url_for('budget')}}">Budget</a>
+    </li>
   </ul>
+  <div class="form-check form-switch">
+    <input class="form-check-input" type="checkbox" id="toggleAttractions">
+    <label class="form-check-label" for="toggleAttractions">Show Attractions</label>
+  </div>
 </nav>
-      <h1>Info About Trip</h1>
-      <li>Members of group</li>
-      <li>Saved info</li>
-      <li>Hotels</li>
+
+<h1>Info About Trip</h1>
+<!-- Other trip information -->
+<input id="autocomplete" class="form-control" type="text" placeholder="Enter a city">
+
+<!-- Container for the map -->
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<!-- Container for the restaurants or attractions list -->
+<div id="restaurants-list" style="height: 500px; width: 100%; overflow-y: scroll; margin-top: 20px;">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Website</th>
+        <th>Price Level</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody id="restaurants-table-body">
+      <!-- Data will be dynamically inserted here -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Link to the map.js file -->
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+
 {% endblock %}
