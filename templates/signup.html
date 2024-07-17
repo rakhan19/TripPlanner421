@@ -1,6 +1,14 @@
 {% extends "base0.html"%}
 
 {% block content %}
-    <h1>Sign up here</h1>
-    <li>After sign up, go to account main profile</li>
+<h1>Sign up here</h1>
+<form action="{{ url_for('auth.register') }}" method="POST">
+    <label for="username">Username</label>
+    <input type="text" name="username" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" required>
+    <label for="email">Email</label>
+    <input type="email" name="email" required>
+    <button type="submit" class="btn btn-info">Sign up</button>
+</form>
 {% endblock %}
