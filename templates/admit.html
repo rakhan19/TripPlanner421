@@ -1,0 +1,7 @@
+{% extends "base0.html"%}
+
+{% block content %}
+        <h2>User name and password authentification</h2>
+        <button type="button" class="btn btn-info"><a href="{{url_for('mainpage')}}">Log In</a></button>
+        <h3>Not signed up? <a href="{{url_for('signup')}}">Sign up</a> here</h3>
+{% endblock %}
