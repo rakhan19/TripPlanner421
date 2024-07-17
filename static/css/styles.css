@@ -1,0 +1,21 @@
+
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+    .autocomplete-dropdown {
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+        position: absolute;
+        z-index: 1000;
+        background-color: white;
+        width: calc(100% - 20px);
+    }
+    .autocomplete-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+    .autocomplete-item:hover {
+        background-color: #f0f0f0;
+    }

@@ -1,14 +1,22 @@
-{% extends "base1.html"%}
+{% extends "base1.html" %}
 
 {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <ul class="navbar-nav">
-      <a class="nav-link" href="{{url_for('chat')}}">Chat <span class="sr-only"></span></a>
-      <a class="nav-link" href="{{url_for('budget')}}">Budget <span class="sr-only"></span></a>
-  </ul>
+    <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('chat') }}">Chat</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('budget') }}">Budget</a></li>
+    </ul>
 </nav>
-      <h1>Info About Trip</h1>
-      <li>Members of group</li>
-      <li>Saved info</li>
-      <li>Hotels</li>
+<h1>Info About Trip</h1>
+<ul>
+    <li>Members of group</li>
+    <li>Saved info</li>
+    <li>Hotels</li>
+</ul>
+
+<div id="map-container" style="position: relative;">
+    <input id="search-box" class="form-control" type="text" placeholder="Enter a city..." aria-label="Search">
+    <div id="autocomplete-results" class="autocomplete-dropdown"></div>
+    <div id="map"></div>
+</div>
 {% endblock %}
