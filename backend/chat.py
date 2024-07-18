@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models import mongo
 from auth import token_required
 from datetime import datetime
+from bson.objectid import ObjectId
 
 chat_bp = Blueprint("chat", __name__)
 
@@ -13,11 +14,11 @@ def add_message(current_user, trip_id):
     message = data.get("message")
     if not message:
         return jsonify({"error": "Invalid input"}), 400
-    mongo.db.chatrooms.update_one(
-        {"trip_id": trip_id},
+    mongo.db.itineraries.update_one(
+        {"_id": ObjectId(trip_id)},
         {
             "$push": {
-                "messages": {
+                "chat_logs": {
                     "user_id": current_user["_id"],
                     "message": message,
                     "timestamp": datetime.utcnow(),
@@ -38,8 +39,8 @@ def create_poll(current_user, trip_id):
     if not question or not options:
         return jsonify({"error": "Invalid input"}), 400
     poll = {"question": question, "options": options, "votes": []}
-    mongo.db.chatrooms.update_one(
-        {"trip_id": trip_id}, {"$push": {"polls": poll}}, upsert=True
+    mongo.db.itineraries.update_one(
+        {"_id": ObjectId(trip_id)}, {"$push": {"polls": poll}}, upsert=True
     )
     return jsonify({"message": "Poll created"}), 201
 
@@ -51,8 +52,8 @@ def vote_poll(current_user, trip_id, poll_id):
     option = data.get("option")
     if not option:
         return jsonify({"error": "Invalid input"}), 400
-    mongo.db.chatrooms.update_one(
-        {"trip_id": trip_id, "polls._id": poll_id},
+    mongo.db.itineraries.update_one(
+        {"_id": ObjectId(trip_id), "polls._id": ObjectId(poll_id)},
         {
             "$push": {
                 "polls.$.votes": {"user_id": current_user["_id"], "option": option}
