@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import mongo
+from backend.models import mongo
 import jwt
 import datetime
 from functools import wraps

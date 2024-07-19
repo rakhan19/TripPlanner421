@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import mongo
-from auth import token_required
+from backend.models import mongo
+from backend.auth import token_required
 from datetime import datetime
 from bson.objectid import ObjectId
 
