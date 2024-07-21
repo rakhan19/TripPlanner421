@@ -4,6 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -66,45 +67,21 @@ def budget():
 def mainpage(username):
     user = mongo.db.users.find_one({"username": username})
     if not user:
-        return jsonify({"error:": "user not found"}), 404
+        return jsonify({"error": "user not found"}), 404
+
+    for trip in user["profile"]["past_trips"]:
+        user_names = []
+        for user_id in trip["users"]:
+            trip_user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+            if trip_user:
+                user_names.append(trip_user["username"])
+        trip["user_names"] = user_names
+
     return render_template("mainpage.html", user=user)
+
+
+
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-# from flask import Flask, render_template, request
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def welcome():
-#     return render_template('welcome.html')
-
-# @app.route('/admit')
-# def admit():
-#     return render_template('admit.html')
-
-# @app.route('/signup')
-# def signup():
-#     return render_template('signup.html')
-
-# @app.route('/main')
-# def mainpage():
-#     return render_template('mainpage.html')
-
-# @app.route('/trip')
-# def trip():
-#     return render_template('trip.html')
-
-# @app.route('/chat')
-# def chat():
-#     return render_template('chat.html')
-
-# @app.route('/budget')
-# def budget():
-#     return render_template('budget.html')
-
-# if __name__=='__main__':
-#     app.run(debug="True")
