@@ -3,7 +3,8 @@ from werkzeug.security import generate_password_hash
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-
+from datetime import datetime
+from bson.objectid import ObjectId
 
 load_dotenv()
 
@@ -80,7 +81,93 @@ def mainpage(username):
     return render_template("mainpage.html", user=user)
 
 
+def initialize_database():
+    test_users = [
+        {
+            "username": "testuser1",
+            "password": "testpassword1",
+            "email": "testuser1@example.com",
+        },
+        {
+            "username": "testuser2",
+            "password": "testpassword2",
+            "email": "testuser2@example.com",
+        },
+    ]
 
+    user_ids = []
+    for user in test_users:
+        existing_user = mongo.db.users.find_one({"username": user["username"]})
+        if not existing_user:
+            hashed_password = generate_password_hash(user["password"])
+            user_id = mongo.db.users.insert_one(
+                {
+                    "username": user["username"],
+                    "password": hashed_password,
+                    "email": user["email"],
+                    "profile": {
+                        "name": f"Test User {user['username'][-1]}",
+                        "past_trips": [],
+                    },
+                }
+            ).inserted_id
+            user_ids.append(user_id)
+            print(f"Test user {user['username']} created with user_id: {user_id}")
+        else:
+            user_ids.append(existing_user["_id"])
+
+    # check if the itinerary already exists
+    existing_itinerary = mongo.db.itineraries.find_one({"trip_name": "Test Trip"})
+    if not existing_itinerary:
+        # create a dummy itinerary in the itineraries collection
+        itinerary_id = mongo.db.itineraries.insert_one(
+            {
+                "trip_name": "Test Trip",
+                "users": user_ids,
+                "itinerary": [
+                    {
+                        "activity": "Visit Eiffel Tower",
+                        "location": "Paris",
+                        "time": datetime(2022, 7, 15, 10, 0).isoformat(),
+                        "notes": "Buy tickets online",
+                    },
+                    {
+                        "activity": "Lunch at Le Jules Verne",
+                        "location": "Paris",
+                        "time": datetime(2022, 7, 15, 13, 0).isoformat(),
+                        "notes": "Reservation at 1 PM",
+                    },
+                ],
+                "chat_logs": [
+                    {
+                        "user_id": user_ids[0],
+                        "message": "Looking forward to the trip!",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                    {
+                        "user_id": user_ids[1],
+                        "message": "Don't forget to pack comfortable shoes.",
+                        "timestamp": datetime.utcnow().isoformat(),
+                    },
+                ],
+            }
+        ).inserted_id
+
+        itinerary = mongo.db.itineraries.find_one({"_id": ObjectId(itinerary_id)})
+
+        # add the itinerary to each user's past trips
+        for user_id in user_ids:
+            mongo.db.users.update_one(
+                {"_id": ObjectId(user_id)}, {"$push": {"profile.past_trips": itinerary}}
+            )
+
+        print(
+            f"Dummy itinerary added to past trips for both test users with itinerary_id: {itinerary_id}"
+        )
+    else:
+        print("Dummy itinerary already exists")
+
+initialize_database()
 
 
 if __name__ == "__main__":
