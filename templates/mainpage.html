@@ -1,14 +1,24 @@
-{% extends "base1.html"%}
+{% extends "base1.html" %} {% block content %}
+<h1>Main Page</h1>
+<p>
+  Username: {{ user.username }} <br />
+  Past Trips:
+</p>
 
-{% block content %}
-      <h1>Main Page</h1>
-      <p>
-            Username:
-            {{user.username}}
-            <br>
-            Past Trips:
-            {{user.past_trips}}
-            
-      </p>
-
-{% endblock %}
+{% if user.profile.past_trips %}
+<ul>
+  {% for trip in user.profile.past_trips %}
+  <li>
+    <strong>Trip Name:</strong> {{ trip.trip_name }} <br />
+    <strong>People Involved:</strong>
+    <ul>
+      {% for user_name in trip.user_names %}
+      <li>{{ user_name }}</li>
+      {% endfor %}
+    </ul>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No past trips found.</p>
+{% endif %} {% endblock %}
