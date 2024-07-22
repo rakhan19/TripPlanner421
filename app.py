@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from werkzeug.security import generate_password_hash
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -54,9 +54,12 @@ def trip():
     return render_template("trip.html")
 
 
-@app.route("/chat")
-def chat():
-    return render_template("chat.html")
+@app.route("/trip/<trip_id>/chat")
+def trip_chat(trip_id):
+    trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
+    if not trip:
+        return jsonify({"error": "Trip not found"}), 404
+    return render_template("trip_chat.html", trip=trip)
 
 
 @app.route("/budget")
@@ -79,6 +82,20 @@ def mainpage(username):
         trip["user_names"] = user_names
 
     return render_template("mainpage.html", user=user)
+
+
+@app.route("/trip/<trip_id>")
+def trip_detail(trip_id):
+    trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
+    if not trip:
+        return jsonify({"error": "Trip not found"}), 404
+    users = []
+    for user_id in trip["users"]:
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        if user:
+            users.append(user["username"])
+    trip["user_names"] = users
+    return render_template("trip.html", trip=trip)
 
 
 def initialize_database():
@@ -167,8 +184,8 @@ def initialize_database():
     else:
         print("Dummy itinerary already exists")
 
-initialize_database()
 
+initialize_database()
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,44 +1,43 @@
-{% extends "base1.html" %}
-
-{% block content %}
+{% extends "base1.html" %} {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="{{url_for('chat')}}">Chat</a>
+      <a class="nav-link" href="{{ url_for('trip_chat', trip_id=trip._id) }}"
+        >Chat</a
+      >
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{{url_for('budget')}}">Budget</a>
+      <a class="nav-link" href="{{ url_for('budget') }}">Budget</a>
     </li>
   </ul>
   <div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="toggleAttractions">
-    <label class="form-check-label" for="toggleAttractions">Show Attractions</label>
+    <input class="form-check-input" type="checkbox" id="toggleAttractions" />
+    <label class="form-check-label" for="toggleAttractions"
+      >Show Attractions</label
+    >
   </div>
 </nav>
 
-<h1>Info About Trip</h1>
-<!-- Other trip information -->
-<input id="autocomplete" class="form-control" type="text" placeholder="Enter a city">
+<h1>{{ trip.trip_name }}</h1>
+<h2>Itinerary</h2>
+<ul>
+  {% for item in trip.itinerary %}
+  <li>{{ item.activity }} at {{ item.location }} on {{ item.time }}</li>
+  {% endfor %}
+</ul>
+<form
+  action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}"
+  method="POST"
+>
+  <input type="text" name="activity" placeholder="Activity" required />
+  <input type="text" name="location" placeholder="Location" required />
+  <input type="datetime-local" name="time" placeholder="Time" required />
+  <textarea name="notes" placeholder="Notes"></textarea>
+  <button type="submit">Add Item</button>
+</form>
 
 <!-- Container for the map -->
-<div id="map" style="height: 500px; width: 100%;"></div>
-
-<!-- Container for the restaurants or attractions list -->
-<div id="restaurants-list" style="height: 500px; width: 100%; overflow-y: scroll; margin-top: 20px;">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Website</th>
-        <th>Price Level</th>
-        <th>Rating</th>
-      </tr>
-    </thead>
-    <tbody id="restaurants-table-body">
-      <!-- Data will be dynamically inserted here -->
-    </tbody>
-  </table>
-</div>
+<div id="map" style="height: 500px; width: 100%"></div>
 
 <!-- Link to the map.js file -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
