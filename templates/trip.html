@@ -1,10 +1,9 @@
-{% extends "base1.html" %} {% block content %}
+{% extends "base1.html" %}
+{% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('trip_chat', trip_id=trip._id) }}"
-        >Chat</a
-      >
+      <a class="nav-link" href="{{ url_for('trip_chat', trip_id=trip._id) }}">Chat</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ url_for('budget') }}">Budget</a>
@@ -12,9 +11,7 @@
   </ul>
   <div class="form-check form-switch">
     <input class="form-check-input" type="checkbox" id="toggleAttractions" />
-    <label class="form-check-label" for="toggleAttractions"
-      >Show Attractions</label
-    >
+    <label class="form-check-label" for="toggleAttractions">Show Attractions</label>
   </div>
 </nav>
 
@@ -25,10 +22,8 @@
   <li>{{ item.activity }} at {{ item.location }} on {{ item.time }}</li>
   {% endfor %}
 </ul>
-<form
-  action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}"
-  method="POST"
->
+
+<form action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}" method="POST">
   <input type="text" name="activity" placeholder="Activity" required />
   <input type="text" name="location" placeholder="Location" required />
   <input type="datetime-local" name="time" placeholder="Time" required />
@@ -36,10 +31,28 @@
   <button type="submit">Add Item</button>
 </form>
 
+<!-- Input field for location autocomplete -->
+<input id="autocomplete" placeholder="Enter a location" type="text" class="form-control" style="width: 300px; margin-bottom: 10px;" />
+
 <!-- Container for the map -->
 <div id="map" style="height: 500px; width: 100%"></div>
 
+<!-- Table to display restaurants and attractions -->
+<table id="places-table" class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Website</th>
+      <th>Price Level</th>
+      <th>Rating</th>
+      <th>Send to Itinerary</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Rows will be added here by map.js -->
+  </tbody>
+</table>
+
 <!-- Link to the map.js file -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-
 {% endblock %}
