@@ -30,7 +30,6 @@ def token_required(f):
     return decorated
 
 
-
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def register():
     # Request Form instead of using get_json()
@@ -78,10 +77,17 @@ def login():
                 algorithm="HS256",
             )
             response = redirect(url_for("mainpage", username=username))
-            response.set_cookie('x-access-token', token)
+            response.set_cookie("x-access-token", token)
             return response
             # return jsonify({"token": token}), 200
         return jsonify({"error": "Invalid username or password"}), 401
         # return render_template('login.html', error="Incorrect username or password")
     return render_template("login.html")
     # return jsonify({"error": "Invalid username or password"}), 401
+
+
+@auth_bp.route("/logout")
+def logout():
+    response = redirect(url_for("welcome"))
+    response.set_cookie("x-access-token", "", expires=0)
+    return response
