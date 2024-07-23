@@ -181,22 +181,18 @@ function highlightTableRow(url) {
 }
 
 function initMap() {
-  // Initialize the map centered on a default location
-  var defaultLocation = { lat: 37.7749, lng: -122.4194 }; // San Francisco
+  var defaultLocation = { lat: 37.7749, lng: -122.4194 }; 
   var map = new google.maps.Map(document.getElementById('map'), {
     center: defaultLocation,
     zoom: 14
   });
 
-  // Initialize the autocomplete input
   var input = document.getElementById('autocomplete');
   var autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.setFields(['geometry']);
 
-  // Bias the search results to the map's viewport
   autocomplete.bindTo('bounds', map);
 
-  // Listen for the event fired when the user selects a prediction
   autocomplete.addListener('place_changed', function() {
     var place = autocomplete.getPlace();
     if (!place.geometry) {
@@ -204,7 +200,6 @@ function initMap() {
       return;
     }
 
-    // If the place has a geometry, present it on the map
     if (place.geometry.viewport) {
       map.fitBounds(place.geometry.viewport);
     } else {
@@ -212,7 +207,6 @@ function initMap() {
       map.setZoom(16);
     }
 
-    // Get the bounds of the map
     var bounds = map.getBounds();
     var bl = bounds.getSouthWest();
     var tr = bounds.getNorthEast();
@@ -224,7 +218,6 @@ function initMap() {
       tr_longitude: tr.lng()
     });
 
-    // Determine if attractions or restaurants should be displayed
     const showAttractions = document.getElementById('toggleAttractions').checked;
 
     if (showAttractions) {
@@ -240,11 +233,9 @@ function initMap() {
     }
   });
 
-  // Trigger place_changed event on toggle switch change
   document.getElementById('toggleAttractions').addEventListener('change', function() {
     google.maps.event.trigger(input, 'place_changed');
   });
 }
 
-// Load the map when the window loads
 window.addEventListener('load', initMap);
