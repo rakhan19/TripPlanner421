@@ -40,7 +40,7 @@ def add_itinerary_item(current_user, trip_id):
 def create_itinerary(current_user):
     data = request.form
     trip_name = data.get("trip_name")
-    users = data.getlist("users")  # Assuming 'users' is a list of user IDs
+    users = data.getlist("users")
     if not trip_name or not users:
         return jsonify({"error": "Invalid input"}), 400
 
