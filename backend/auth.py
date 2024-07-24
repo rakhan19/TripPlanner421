@@ -8,14 +8,16 @@ import os
 
 auth_bp = Blueprint("auth", __name__)
 
+
 @auth_bp.route("/admit", methods=["GET"])
 def templ():
-    return render_template('admit.html')
+    return render_template("admit.html")
+
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get("x-access-token")
+        token = request.cookies.get("x-access-token")
         if not token:
             return jsonify({"error": "Token is missing"}), 401
         try:
@@ -27,32 +29,10 @@ def token_required(f):
 
     return decorated
 
-def register_test(db, data):
-    username = data.get("username")
-    password = data.get("password")
-    email = data.get("email")
-
-    if not username or not password or not email:
-        return {'status_code': 400, 'json': {"error": "Invalid input"}}
-
-    if db.users.find_one({"username": username}):
-        return {'status_code': 400, 'json': {"error": "User already exists"}}
-
-    hashed_password = generate_password_hash(password)
-    user_id = db.users.insert_one(
-        {
-            "username": username,
-            "password": hashed_password,
-            "email": email,
-            "profile": {"name": "", "age": 0, "gender": "", "past_trips": []},
-        }
-    ).inserted_id
-
-    return {'status_code': 201, 'json': {"message": "User registered successfully", "user_id": str(user_id)}}
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def register():
-    #Request Form instead of using get_json()
+    # Request Form instead of using get_json()
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
@@ -72,34 +52,16 @@ def register():
                 "profile": {"name": "", "past_trips": []},
             }
         ).inserted_id
-        #return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201, 
-        return redirect(url_for('mainpage', username=username))
-    
-    return render_template('signup.html') 
-    #return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201
-    
+        # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201,
+        return redirect(url_for("mainpage", username=username))
 
-def login_test(db, data):
-    username = data.get("username")
-    password = data.get("password")
-    
-    user = db.users.find_one({"username": username})
-    
-    if user and check_password_hash(user["password"], password):
-        token = jwt.encode(
-            {
-                "username": user["username"],
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
-            },
-            os.getenv("SECRET_KEY"),
-            algorithm="HS256",
-        )
-        return {"status_code": 200, "json": {"token": token}}
-    return {"status_code": 401, "json": {"error": "Invalid username or password"}}
+    return render_template("signup.html")
+    # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201
 
-@auth_bp.route("/admit", methods=["GET","POST"])
+
+@auth_bp.route("/admit", methods=["GET", "POST"])
 def login():
-    #data = request.get_json()
+    # data = request.get_json()
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -114,9 +76,18 @@ def login():
                 os.getenv("SECRET_KEY"),
                 algorithm="HS256",
             )
-            return redirect(url_for('mainpage', username=username))
-            #return jsonify({"token": token}), 200
+            response = redirect(url_for("mainpage", username=username))
+            response.set_cookie("x-access-token", token)
+            return response
+            # return jsonify({"token": token}), 200
         return jsonify({"error": "Invalid username or password"}), 401
-        #return render_template('login.html', error="Incorrect username or password")
-    return render_template('login.html')
-    #return jsonify({"error": "Invalid username or password"}), 401
+        # return render_template('login.html', error="Incorrect username or password")
+    return render_template("login.html")
+    # return jsonify({"error": "Invalid username or password"}), 401
+
+
+@auth_bp.route("/logout")
+def logout():
+    response = redirect(url_for("welcome"))
+    response.set_cookie("x-access-token", "", expires=0)
+    return response

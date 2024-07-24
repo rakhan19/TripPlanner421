@@ -1,3 +1,4 @@
+<!-- mainpage.html -->
 {% extends "base1.html" %} {% block content %}
 <h1>Main Page</h1>
 <p>
@@ -9,7 +10,9 @@
 <ul>
   {% for trip in user.profile.past_trips %}
   <li>
-    <strong>Trip Name:</strong> {{ trip.trip_name }} <br />
+    <a href="{{ url_for('trip_detail', trip_id=trip._id) }}">
+      <strong>Trip Name:</strong> {{ trip.trip_name }}
+    </a>
     <strong>People Involved:</strong>
     <ul>
       {% for user_name in trip.user_names %}

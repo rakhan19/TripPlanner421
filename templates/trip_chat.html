@@ -1,0 +1,78 @@
+{% extends "base1.html" %} {% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('trip_detail', trip_id=trip._id) }}"
+        >Back to Trip</a
+      >
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('budget') }}">Budget</a>
+    </li>
+  </ul>
+</nav>
+
+<h1>{{ trip.trip_name }} - Chat</h1>
+
+<div id="chat-container" style="height: 400px; overflow-y: scroll">
+  <ul id="chat-logs">
+    {% for log in trip.chat_logs %}
+    <li>{{ log.username }}: {{ log.message }} at {{ log.timestamp }}</li>
+    {% endfor %}
+  </ul>
+</div>
+<form id="chat-form">
+  <textarea
+    id="message"
+    name="message"
+    placeholder="Type your message"
+    required
+  ></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    setInterval(() => {
+      fetch("/chat/{{ trip._id }}/messages")
+        .then((response) => response.json())
+        .then((data) => {
+          const chatLogs = document.getElementById("chat-logs");
+          chatLogs.innerHTML = "";
+          data.forEach((log) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${log.username}: ${log.message} at ${log.timestamp}`;
+            chatLogs.appendChild(listItem);
+          });
+        });
+    }, 5000); // Update every 5 seconds
+
+    document
+      .getElementById("chat-form")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        const message = document.getElementById("message").value;
+        fetch("/chat/{{ trip._id }}/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `message=${message}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message) {
+              const chatLogs = document.getElementById("chat-logs");
+              const listItem = document.createElement("li");
+              listItem.textContent = `{{ trip.user_name }}: ${message} at ${new Date().toISOString()}`;
+              chatLogs.appendChild(listItem);
+              document.getElementById("message").value = "";
+            } else {
+              alert("Error sending message");
+            }
+          });
+      });
+  });
+</script>
+
+{% endblock %}

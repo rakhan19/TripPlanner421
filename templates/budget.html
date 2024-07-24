@@ -1,13 +1,15 @@
-{% extends "base1.html"%}
-
-{% block content %}
+{% extends "base1.html"%} {% block content %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <ul class="navbar-nav">
-      <a class="nav-link" href="{{url_for('chat')}}">Chat <span class="sr-only"></span></a>
-      <a class="nav-link" href="{{url_for('budget')}}">Budget <span class="sr-only"></span></a>
+    <a class="nav-link" href="{{url_for('chat')}}"
+      >Chat <span class="sr-only"></span
+    ></a>
+    <a class="nav-link" href="{{url_for('budget')}}"
+      >Budget <span class="sr-only"></span
+    ></a>
   </ul>
 </nav>
-      <h1>Budget</h1>
-      <li>Functional Table</li>
-      <li>All able to edit</li>
+<h1>Budget</h1>
+<li>Functional Table</li>
+<li>All able to edit</li>
 {% endblock %}
