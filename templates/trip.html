@@ -26,6 +26,12 @@
   {% endfor %}
 </ul>
 
+<!-- Invite Link Section -->
+<div>
+  <input type="text" value="{{ invite_link }}" id="inviteLink" readonly style="margin-bottom: 10px;">
+  <button onclick="copyInviteLink()">Invite Someone To This Itinerary</button>
+</div>
+
 <form
   action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}"
   method="POST"
@@ -67,4 +73,14 @@
 
 <!-- Link to the map.js file -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script>
+function copyInviteLink() {
+    var copyText = document.getElementById("inviteLink");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+    navigator.clipboard.writeText(copyText.value);
+    alert("Copied the link: " + copyText.value);
+}
+</script>
 {% endblock %}

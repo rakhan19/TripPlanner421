@@ -34,7 +34,9 @@
           <a class="nav-link" href="{{ url_for('welcome') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('trip') }}">Groups</a>
+          <a class="nav-link" href="{{ url_for('trip', trip_id=trip_id) }}"
+            >Groups</a
+          >
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('budget') }}">Budget</a>

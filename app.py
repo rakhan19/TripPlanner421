@@ -21,7 +21,7 @@ mongo.init_app(app)
 
 from backend.auth import auth_bp, token_required
 from backend.chat import chat_bp
-from backend.itinerary import itinerary_bp
+from backend.itinerary import itinerary_bp, get_invite_link
 from backend.budget import budget_bp
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -35,7 +35,7 @@ def welcome():
     print("Welcome route accessed")  # Debugging print statement
     token = request.cookies.get("x-access-token")
     if token:
-        print(f"User already logged in")
+        print("User already logged in")
         data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         username = data["username"]
         print(f"Token username: {username}")  # Debugging print statement
@@ -114,7 +114,9 @@ def trip_detail(current_user, trip_id):
         if user:
             users.append(user["username"])
     trip["user_names"] = users
-    return render_template("trip.html", trip=trip)
+
+    invite_link = get_invite_link(trip["chatroom_id"])
+    return render_template("trip.html", invite_link=invite_link, trip=trip)
 
 
 def initialize_database():

@@ -4,6 +4,7 @@ from backend.models import mongo
 from backend.auth import token_required
 from datetime import datetime
 from bson.objectid import ObjectId
+import uuid
 
 itinerary_bp = Blueprint("itinerary", __name__)
 
@@ -61,4 +62,28 @@ def create_itinerary(current_user):
             {"_id": ObjectId(user_id)}, {"$push": {"profile.past_trips": itinerary}}
         )
 
-    return redirect(url_for("trip_detail", trip_id=itinerary_id))
+    return redirect(
+        url_for("trip_detail", trip_id=itinerary_id, invite_code=invite_code)
+    )
+
+
+@itinerary_bp.route("/join/<chatroom_id>", methods=["GET"])
+@token_required
+def join_itinerary(current_user, chatroom_id):
+    itinerary = mongo.db.itineraries.find_one({"chatroom_id": ObjectId(chatroom_id)})
+    if not itinerary:
+        return jsonify({"error": "Invalid chatroom ID"}), 405
+
+    if ObjectId(current_user["_id"]) not in itinerary["users"]:
+        mongo.db.itineraries.update_one(
+            {"_id": itinerary["_id"]},
+            {"$push": {"users": ObjectId(current_user["_id"])}},
+        )
+        return jsonify({"message": "You have been added to the itinerary"}), 200
+    else:
+        return jsonify({"message": "You are already part of this itinerary"}), 400
+
+
+def get_invite_link(chatroom_id):
+    base_url = "http://127.0.0.1:5000/itinerary/join/"
+    return f"{base_url}{chatroom_id}"
