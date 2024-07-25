@@ -10,10 +10,14 @@
       >
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('budget') }}">Budget</a>
+      <a class="nav-link" href="{{ url_for('budget', trip_id=trip._id) }}"
+        >Budget</a
+      >
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{{url_for('itinerary')}}">Itinerary</a>
+      <a class="nav-link" href="{{url_for('itinerary', trip_id=trip._id)}}"
+        >Itinerary</a
+      >
     </li>
   </ul>
 </nav>

@@ -17,7 +17,7 @@ def serialize_chat_log(log):
     if "_id" in log:
         log["_id"] = str(log["_id"])
     log["user_id"] = str(log["user_id"])
-    log["timestamp"] = log["timestamp"].isoformat()
+    log["timestamp"] = log["timestamp"]
     return log
 
 
