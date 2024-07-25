@@ -1,5 +1,5 @@
 # Itinerary.py
-from flask import Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint, request, jsonify, redirect, url_for, flash
 from backend.models import mongo
 from backend.auth import token_required
 from datetime import datetime
@@ -32,39 +32,69 @@ def add_itinerary_item(current_user, trip_id):
     mongo.db.itineraries.update_one(
         {"_id": ObjectId(trip_id)}, {"$push": {"itinerary": item}}, upsert=True
     )
-    return redirect(url_for("trip_detail", trip_id=trip_id))
+    return redirect(url_for("itinerary", trip_id=trip_id))
 
 
 @itinerary_bp.route("/new", methods=["POST"])
 @token_required
 def create_itinerary(current_user):
-    data = request.form
-    trip_name = data.get("trip_name")
-    users = data.getlist("users")
-    if not trip_name or not users:
-        return jsonify({"error": "Invalid input"}), 400
+    trip_name = request.form.get("trip_name")
+    temp_users=[current_user]
 
+    user_ids = []
+
+    for user in temp_users:
+        existing_user = mongo.db.users.find_one({"username": user["username"]})
+        user_ids.append(existing_user["_id"])
+
+#    users = data.getlist("users")
+    if not trip_name:
+        return jsonify({"error": "Invalid input"}), 400
+    
+    existing_itinerary = mongo.db.itineraries.find_one({"trip_name": trip_name})
+    if existing_itinerary:
+        flash("Trip already exists!", "warning")
+        return redirect(
+         url_for("trip_detail", trip_id=existing_itinerary["_id"])
+        )
+    
     # Create chatroom
     chatroom_id = mongo.db.chatrooms.insert_one({"chat_logs": []}).inserted_id
-
+    budget = [
+    {
+        "user_id": user_id,
+        "flight": 0,
+        "hotel": 0,
+        "food": 0,
+        "transport": 0,
+        "activities": 0,
+        "spending": 0
+    } for user_id in user_ids
+    ] 
     itinerary = {
         "trip_name": trip_name,
-        "users": [ObjectId(user_id) for user_id in users],
+        "users": [ObjectId(user_id) for user_id in user_ids],
         "chatroom_id": chatroom_id,
         "itinerary": [],
+        "budget" : budget
     }
 
     itinerary_id = mongo.db.itineraries.insert_one(itinerary).inserted_id
 
     # Update each user with the new itinerary
-    for user_id in users:
+    for user_id in user_ids:
         mongo.db.users.update_one(
             {"_id": ObjectId(user_id)}, {"$push": {"profile.past_trips": itinerary}}
         )
-
+    flash("Trip created successfully!", "success")
     return redirect(
-        url_for("trip_detail", trip_id=itinerary_id, invite_code=invite_code)
+         url_for("trip_detail", trip_id=itinerary_id)
     )
+
+
+    # return redirect(
+    #     url_for("trip_detail", trip_id=itinerary_id, invite_code=invite_code)
+    # )
 
 
 @itinerary_bp.route("/join/<chatroom_id>", methods=["GET"])

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.models import mongo
 import jwt
@@ -38,10 +38,14 @@ def register():
     email = request.form.get("email")
     if request.method == "POST":
         if not username or not password or not email:
-            return jsonify({"error": "Invalid input"}), 400
+            #return jsonify({"error": "Invalid input"}), 400
+            flash("Invalid Input", "warning")
+            return render_template("signup.html")
 
         if mongo.db.users.find_one({"username": username}):
-            return jsonify({"error": "User already exists"}), 400
+            #return jsonify({"error": "User already exists"}), 400
+            flash("User already exists", "warning")
+            return render_template("signup.html")
 
         hashed_password = generate_password_hash(password)
         user_id = mongo.db.users.insert_one(
@@ -53,8 +57,9 @@ def register():
             }
         ).inserted_id
         # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201,
+        flash("User registered successfully", "success")
         return redirect(url_for("mainpage", username=username))
-
+    
     return render_template("signup.html")
     # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201
 
@@ -79,8 +84,9 @@ def login():
             response = redirect(url_for("mainpage", username=username))
             response.set_cookie("x-access-token", token)
             return response
-            # return jsonify({"token": token}), 200
-        return jsonify({"error": "Invalid username or password"}), 401
+            return jsonify({"token": token}), 200
+        flash("Incorrect username or password", "warning")
+        return render_template("admit.html")
         # return render_template('login.html', error="Incorrect username or password")
     return render_template("login.html")
     # return jsonify({"error": "Invalid username or password"}), 401

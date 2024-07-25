@@ -61,7 +61,7 @@ def main():
 
 
 @app.route("/trip")
-def trip():
+def trip(username, trip_name):
     return render_template("trip.html")
 
 
@@ -71,13 +71,33 @@ def trip_chat(current_user, trip_id):
     trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
-    return render_template("trip_chat.html", trip=trip)
+    return render_template("trip_chat.html", trip=trip, user=current_user)
 
 
-@app.route("/budget")
+@app.route("/trip/<trip_id>/budget")
 @token_required
-def budget():
-    return render_template("budget.html")
+def budget(current_user, trip_id):
+    trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
+    user_ids = trip['users']
+    user_budgets = []
+    for budget in trip['budget']:
+        user = mongo.db.users.find_one({"_id": budget['user_id']})
+        if user:
+            user_budget = {
+                'username': user['username'],
+                'budget': budget
+            }
+            user_budgets.append(user_budget)
+    
+    return render_template("budget.html", trip=trip, user_budgets=user_budgets, user=current_user)
+
+@app.route("/trip/<trip_id>/itinerary")
+@token_required
+def itinerary(current_user, trip_id):
+    trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
+    if not trip:
+        return jsonify({"error": "Trip not found"}), 404
+    return render_template("itinerary.html", trip=trip, user=current_user)
 
 
 @app.route("/mainpage/<username>")
@@ -96,7 +116,7 @@ def mainpage(current_user, username):
                 user_names.append(trip_user["username"])
         trip["user_names"] = user_names
 
-    return render_template("mainpage.html", user=user)
+    return render_template("mainpage.html", user=user, trip=user["profile"]["past_trips"])
 
 
 @app.route("/trip/<trip_id>")
@@ -116,7 +136,7 @@ def trip_detail(current_user, trip_id):
     trip["user_names"] = users
 
     invite_link = get_invite_link(trip["chatroom_id"])
-    return render_template("trip.html", invite_link=invite_link, trip=trip)
+    return render_template("trip.html", invite_link=invite_link, trip=trip, user=current_user)
 
 
 def initialize_database():
@@ -195,6 +215,27 @@ def initialize_database():
                         "location": "Paris",
                         "time": datetime(2022, 7, 15, 13, 0).isoformat(),
                         "notes": "Reservation at 1 PM",
+                    },
+                    
+                ],
+                "budget" :  [
+                    {
+                    "user_id": user_ids[0],
+                    "flight": 300,
+                    "hotel": 400,
+                    "food": 200,
+                    "transport": 150,
+                    "activities": 200,
+                    "spending": 100,
+                    },
+                    {
+                    "user_id": user_ids[1],
+                    "flight": 200,
+                    "hotel": 300,
+                    "food": 100,
+                    "transport": 50,
+                    "activities": 100,
+                    "spending": 80,
                     },
                 ],
             }
