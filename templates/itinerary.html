@@ -1,0 +1,40 @@
+{% extends "base1.html"%}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('trip_detail', trip_id=trip._id) }}"
+          >Back to Trip</a
+        >
+      </li>
+    </ul>
+  </nav>
+<h1>Itinerary</h1>
+
+<table class="table" id="itinerary">
+    <thead>
+      <tr>
+        <th scope="col">Activity</th>
+        <th scope="col">Location</th>
+        <th scope="col">Time</th>
+        <th scope="col">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for activities in trip.itinerary%}
+        <tr>
+        <td>{{activities.activity}}</td>
+        <td>{{activities.location}}</td>
+        <td>{{activities.time}}</td>
+        <td>{{activities.notes}}</td>
+        </tr>
+        {% endfor %} 
+
+    </tbody>
+    <h4>{{user.username}}, here is the current itinerary for the trip: {{trip.trip_name}}</h4>
+
+    
+  </table>
+
+{% endblock %}
