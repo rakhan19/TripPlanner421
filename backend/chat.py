@@ -17,7 +17,7 @@ def serialize_chat_log(log):
     if "_id" in log:
         log["_id"] = str(log["_id"])
     log["user_id"] = str(log["user_id"])
-    log["timestamp"] = log["timestamp"].isoformat()
+    log["timestamp"] = log["timestamp"]
     return log
 
 
@@ -46,7 +46,7 @@ def add_message(current_user, trip_id):
                     "user_id": current_user["_id"],
                     "username": current_user["username"],
                     "message": message,
-                    "timestamp": datetime.utcnow(),
+                    "timestamp": datetime.utcnow().strftime("%H:%M"),
                 }
             }
         },
