@@ -9,17 +9,14 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
       tr_longitude: tr_longitude,
     },
     headers: {
-      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f', 
+      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
       'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
     }
   };
-
   try {
     const response = await axios.request(options);
-    console.log("API Response (Restaurants):", response.data); 
     return response.data.data;
   } catch (error) {
-    console.error("API Error (Restaurants):", error); 
     return [];
   }
 }
@@ -35,17 +32,41 @@ async function fetchAttractions(bl_latitude, tr_latitude, bl_longitude, tr_longi
       tr_longitude: tr_longitude,
     },
     headers: {
-      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f', 
+      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
       'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
     }
   };
 
   try {
     const response = await axios.request(options);
-    console.log("API Response (Attractions):", response.data); // Debugging
     return response.data.data;
   } catch (error) {
-    console.error("API Error (Attractions):", error); 
+    return [];
+  }
+}
+
+async function fetchHotels(bl_latitude, tr_latitude, bl_longitude, tr_longitude) {
+  const options = {
+    method: 'GET',
+    url: 'https://travel-advisor.p.rapidapi.com/hotels/list-in-boundary',
+    params: {
+      bl_latitude: bl_latitude,
+      tr_latitude: tr_latitude,
+      bl_longitude: bl_longitude,
+      tr_longitude: tr_longitude,
+    },
+    headers: {
+      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
+      'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
+    }
+  };
+
+  try {
+    const response = await axios.request(options);
+    console.log("API Response (Hotels):", response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error("API Error (Hotels):", error);
     return [];
   }
 }
@@ -55,12 +76,11 @@ function displayRestaurants(restaurants) {
   tableBody.innerHTML = '';
 
   if (restaurants.length === 0) {
-    console.log("No restaurants found"); // Debugging
+    console.log("No restaurants found");
     return;
   }
 
   restaurants.forEach(restaurant => {
-    console.log("Displaying restaurant:", restaurant); // Debugging
     const row = document.createElement('tr');
 
     const nameCell = document.createElement('td');
@@ -103,12 +123,11 @@ function displayAttractions(attractions) {
   tableBody.innerHTML = '';
 
   if (attractions.length === 0) {
-    console.log("No attractions found"); // Debugging
+    console.log("No attractions found");
     return;
   }
 
   attractions.forEach(attraction => {
-    console.log("Displaying attraction:", attraction); // Debugging
     const row = document.createElement('tr');
 
     const nameCell = document.createElement('td');
@@ -124,7 +143,7 @@ function displayAttractions(attractions) {
     row.appendChild(websiteCell);
 
     const priceLevelCell = document.createElement('td');
-    priceLevelCell.textContent = 'N/A'; 
+    priceLevelCell.textContent = 'N/A';
     row.appendChild(priceLevelCell);
 
     const ratingCell = document.createElement('td');
@@ -146,6 +165,53 @@ function displayAttractions(attractions) {
   });
 }
 
+function displayHotels(hotels) {
+  const tableBody = document.getElementById('places-table').getElementsByTagName('tbody')[0];
+  tableBody.innerHTML = '';
+
+  if (hotels.length === 0) {
+    console.log("No hotels found");
+    return;
+  }
+
+  hotels.forEach(hotel => {
+    const row = document.createElement('tr');
+
+    const nameCell = document.createElement('td');
+    nameCell.textContent = hotel.name || 'N/A';
+    row.appendChild(nameCell);
+
+    const websiteCell = document.createElement('td');
+    const websiteLink = document.createElement('a');
+    websiteLink.href = hotel.web_url || '#';
+    websiteLink.textContent = 'Website';
+    websiteLink.target = '_blank';
+    websiteCell.appendChild(websiteLink);
+    row.appendChild(websiteCell);
+
+    const priceLevelCell = document.createElement('td');
+    priceLevelCell.textContent = hotel.price_level || 'N/A';
+    row.appendChild(priceLevelCell);
+
+    const ratingCell = document.createElement('td');
+    ratingCell.textContent = hotel.rating || 'N/A';
+    row.appendChild(ratingCell);
+
+    const sendToItineraryCell = document.createElement('td');
+    const button = document.createElement('button');
+    button.textContent = 'Send to Itinerary';
+    button.onclick = function() {
+      document.querySelector('input[name="activity"]').value = hotel.name || '';
+      document.querySelector('input[name="location"]').value = hotel.location_string || 'Unknown City';
+      document.querySelector('textarea[name="notes"]').value = hotel.web_url || 'No website available';
+    };
+    sendToItineraryCell.appendChild(button);
+    row.appendChild(sendToItineraryCell);
+
+    tableBody.appendChild(row);
+  });
+}
+
 function addMarkers(map, items) {
   items.forEach(item => {
     const marker = new google.maps.Marker({
@@ -153,8 +219,8 @@ function addMarkers(map, items) {
       map: map,
       title: item.name,
       icon: {
-        url: item.photo ? item.photo.images.small.url : 'https://maps.google.com/mapfiles/ms/icons/restaurant.png', // Use a default icon if no photo available
-        scaledSize: new google.maps.Size(50, 50) // Scale size as needed
+        url: item.photo ? item.photo.images.small.url : 'https://maps.google.com/mapfiles/ms/icons/restaurant.png',
+        scaledSize: new google.maps.Size(50, 50)
       }
     });
 
@@ -168,7 +234,7 @@ function addMarkers(map, items) {
 function highlightTableRow(url) {
   const tableBody = document.getElementById('places-table').getElementsByTagName('tbody')[0];
   const rows = tableBody.getElementsByTagName('tr');
-  
+
   for (let row of rows) {
     const websiteLink = row.getElementsByTagName('a')[0];
     if (websiteLink && websiteLink.href === url) {
@@ -219,11 +285,17 @@ function initMap() {
     });
 
     const showAttractions = document.getElementById('toggleAttractions').checked;
+    const showHotels = document.getElementById('toggleHotels').checked;
 
     if (showAttractions) {
       fetchAttractions(bl.lat(), tr.lat(), bl.lng(), tr.lng()).then(attractions => {
         displayAttractions(attractions);
         addMarkers(map, attractions);
+      });
+    } else if (showHotels) {
+      fetchHotels(bl.lat(), tr.lat(), bl.lng(), tr.lng()).then(hotels => {
+        displayHotels(hotels);
+        addMarkers(map, hotels);
       });
     } else {
       fetchRestaurants(bl.lat(), tr.lat(), bl.lng(), tr.lng()).then(restaurants => {
@@ -234,6 +306,10 @@ function initMap() {
   });
 
   document.getElementById('toggleAttractions').addEventListener('change', function() {
+    google.maps.event.trigger(input, 'place_changed');
+  });
+
+  document.getElementById('toggleHotels').addEventListener('change', function() {
     google.maps.event.trigger(input, 'place_changed');
   });
 }
