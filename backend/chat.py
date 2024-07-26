@@ -46,7 +46,7 @@ def add_message(current_user, trip_id):
                     "user_id": current_user["_id"],
                     "username": current_user["username"],
                     "message": message,
-                    "timestamp": datetime.utcnow().strftime("%H:%M"),
+                    "timestamp": datetime.now(),
                 }
             }
         },
