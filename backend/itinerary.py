@@ -115,6 +115,11 @@ def join_itinerary_by_invite(current_user):
             {"_id": itinerary["_id"]},
             {"$push": {"users": ObjectId(current_user["_id"])}},
         )
+        # Add the itinerary to the user's past trips
+        mongo.db.users.update_one(
+            {"_id": ObjectId(current_user["_id"])},
+            {"$push": {"profile.past_trips": itinerary}},
+        )
         flash("You have been added to the itinerary", "success")
         return redirect(url_for("itinerary", trip_id=itinerary["_id"]))
     else:
