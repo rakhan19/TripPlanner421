@@ -32,18 +32,15 @@ def token_required(f):
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def register():
-    # Request Form instead of using get_json()
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
     if request.method == "POST":
         if not username or not password or not email:
-            #return jsonify({"error": "Invalid input"}), 400
             flash("Invalid Input", "warning")
             return render_template("signup.html")
 
         if mongo.db.users.find_one({"username": username}):
-            #return jsonify({"error": "User already exists"}), 400
             flash("User already exists", "warning")
             return render_template("signup.html")
 
@@ -56,12 +53,25 @@ def register():
                 "profile": {"name": "", "past_trips": []},
             }
         ).inserted_id
-        # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201,
+
+        # Generate token for the new user
+        token = jwt.encode(
+            {
+                "username": username,
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+            },
+            os.getenv("SECRET_KEY"),
+            algorithm="HS256",
+        )
+
+        # Set the token in the response cookies
+        response = redirect(url_for("mainpage", username=username))
+        response.set_cookie("x-access-token", token)
+
         flash("User registered successfully", "success")
-        return redirect(url_for("mainpage", username=username))
-    
+        return response
+
     return render_template("signup.html")
-    # return jsonify({"message": "User registered successfully", "user_id": str(user_id)}), 201
 
 
 @auth_bp.route("/admit", methods=["GET", "POST"])

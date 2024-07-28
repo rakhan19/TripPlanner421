@@ -20,7 +20,11 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
 
 //API snippet grabbed from RapidApi's Travel Advisor API
 
-async function fetchAttractions(bl_latitude, tr_latitude, bl_longitude, tr_longitude) {
+//API snippet grabbed from RapidApi's Travel Advisor API
+
+async function fetchAttractions(
+  bl_latitude, tr_latitude, bl_longitude, tr_longitude
+) {
   const options = {
     method: 'GET',
     url: 'https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary',
@@ -104,9 +108,12 @@ function displayHotels(hotels) {
 //Add places on the map
 
 function addMarkers(map, items) {
-  items.forEach(item => {
+  items.forEach((item) => {
     const marker = new google.maps.Marker({
-      position: { lat: parseFloat(item.latitude), lng: parseFloat(item.longitude) },
+      position: {
+        lat: parseFloat(item.latitude),
+        lng: parseFloat(item.longitude),
+      },
       map: map,
       title: item.name,
       icon: {
@@ -115,8 +122,8 @@ function addMarkers(map, items) {
       }
     });
 
-    google.maps.event.addListener(marker, 'click', function() {
-      window.open(item.web_url, '_blank');
+    google.maps.event.addListener(marker, "click", function () {
+      window.open(item.web_url, "_blank");
       highlightTableRow(item.web_url);
     });
   });
@@ -193,4 +200,12 @@ function initMap() {
   document.getElementById('toggleHotels').addEventListener('change', () => google.maps.event.trigger(input, 'place_changed'));
 }
 
-window.addEventListener('load', initMap);
+window.addEventListener("load", initMap);
+
+function copyInviteCode() {
+  var copyText = document.getElementById("inviteCode");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+  document.execCommand("copy");
+  alert("Invite code copied: " + copyText.value);
+}

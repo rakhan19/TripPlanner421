@@ -7,10 +7,14 @@
       <a class="nav-link" href="{{ url_for('trip_chat', trip_id=trip._id) }}">Chat</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('budget', trip_id=trip._id) }}">Budget</a>
+      <a class="nav-link" href="{{ url_for('budget', trip_id=trip._id) }}"
+        >Budget</a
+      >
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{{url_for('itinerary', trip_id=trip._id)}}">Itinerary</a>
+      <a class="nav-link" href="{{url_for('itinerary', trip_id=trip._id)}}"
+        >Itinerary</a
+      >
     </li>
   </ul>
   <div class="form-check form-switch">
@@ -43,10 +47,16 @@
   {% endfor %}
 </ul>
 
-<!-- Invite Link Section -->
+<!-- Invite Code Section -->
 <div>
-  <input type="text" value="{{ invite_link }}" id="inviteLink" readonly style="margin-bottom: 10px;">
-  <button onclick="copyInviteLink()">Invite Someone To This Itinerary</button>
+  <input
+    type="text"
+    value="{{ trip.invite_code }}"
+    id="inviteCode"
+    readonly
+    style="margin-bottom: 10px"
+  />
+  <button onclick="copyInviteCode()">Invite Someone To This Itinerary</button>
 </div>
 
 <form action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}" method="POST">
@@ -82,12 +92,12 @@
 <!-- Link to the map.js file -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script>
-function copyInviteLink() {
-  var copyText = document.getElementById("inviteLink");
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); // For mobile devices
-  navigator.clipboard.writeText(copyText.value);
-  alert("Copied the link: " + copyText.value);
-}
+  function copyInviteLink() {
+    var copyText = document.getElementById("inviteLink");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+    navigator.clipboard.writeText(copyText.value);
+    alert("Copied the link: " + copyText.value);
+  }
 </script>
 {% endblock %}

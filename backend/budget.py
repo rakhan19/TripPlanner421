@@ -27,6 +27,7 @@ def get_expenses(current_user, trip_id):
     trip = mongo.db.trips.find_one({"_id": trip_id})
     return jsonify(trip["budget"]["expenses"]), 200
 
+
 @budget_bp.route("/<trip_id>/updated", methods=["POST"])
 @token_required
 def update_expenses(current_user, trip_id):
@@ -56,18 +57,20 @@ def update_expenses(current_user, trip_id):
         "food": food,
         "transport": transport,
         "activities": activities,
-        "spending": spending
+        "spending": spending,
     }
     result = mongo.db.itineraries.update_one(
-    {"_id": ObjectId(trip_id), "budget.user_id": user_id},
-    {"$set": {
-        "budget.$.flight": updated_budget["flight"],
-        "budget.$.hotel": updated_budget["hotel"],
-        "budget.$.food": updated_budget["food"],
-        "budget.$.transport": updated_budget["transport"],
-        "budget.$.activities": updated_budget["activities"],
-        "budget.$.spending": updated_budget["spending"]
-    }}
+        {"_id": ObjectId(trip_id), "budget.user_id": user_id},
+        {
+            "$set": {
+                "budget.$.flight": updated_budget["flight"],
+                "budget.$.hotel": updated_budget["hotel"],
+                "budget.$.food": updated_budget["food"],
+                "budget.$.transport": updated_budget["transport"],
+                "budget.$.activities": updated_budget["activities"],
+                "budget.$.spending": updated_budget["spending"],
+            }
+        },
     )
 
     return redirect(url_for("budget", trip_id=trip_id))
