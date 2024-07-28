@@ -21,57 +21,109 @@
       <th scope="col">Spending Money</th>
       <th scope="col">Total</th>
     </tr>
-          
   </thead>
-      {% for user_budget in user_budgets %}
+  {% for user_budget in user_budgets %} {% if user_budget.budget.user_id==
+  user._id %} {% set total = 0 %}
+  <th scope="row">{{ user_budget.username }}</th>
+  <form
+    action="{{ url_for('budget.update_expenses', trip_id=trip._id) }}"
+    method="post"
+  >
+    <input
+      type="hidden"
+      name="user_id"
+      value="{{ user_budget.budget.user_id }}"
+    />
+    <td>
+      <input
+        type="number"
+        id="flight"
+        name="flight"
+        value="{{ user_budget.budget.flight | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        id="hotel"
+        name="hotel"
+        value="{{ user_budget.budget.hotel | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        id="food"
+        name="food"
+        value="{{ user_budget.budget.food | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        id="transport"
+        name="transport"
+        value="{{ user_budget.budget.transport | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        id="activities"
+        name="activities"
+        value="{{ user_budget.budget.activities | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        id="spending"
+        name="spending"
+        value="{{ user_budget.budget.spending | default(0) }}"
+        step="0.01"
+        min="0"
+      />
+    </td>
+    <button type="submit">Update Budget</button>
+  </form>
+  {% set flight = user_budget.budget.flight | default(0) %} {% set hotel =
+  user_budget.budget.hotel | default(0) %} {% set food = user_budget.budget.food
+  | default(0) %} {% set transport = user_budget.budget.transport | default(0)
+  %} {% set activities = user_budget.budget.activities | default(0) %} {% set
+  spending = user_budget.budget.spending | default(0) %} {% set total = flight +
+  hotel + food + transport + activities + spending%}
+  <th>{{ "{:.2f}".format(total) }}</th>
 
-      {% if user_budget.budget.user_id== user._id %}
-      {% set total = 0 %}
-      <th scope="row">{{ user_budget.username }}</th>
-      <form action="{{ url_for('budget.update_expenses', trip_id=trip._id) }}" method="post">
-        <input type="hidden" name="user_id" value="{{ user_budget.budget.user_id }}">
-        <td><input type="number" id="flight" name="flight" value="{{ user_budget.budget.flight | default(0) }}" step="0.01" min="0"></td>
-        <td><input type="number" id="hotel" name="hotel" value="{{ user_budget.budget.hotel | default(0) }}" step="0.01" min="0"></td>
-        <td><input type="number" id="food" name="food" value="{{ user_budget.budget.food | default(0) }}" step="0.01" min="0"></td>
-        <td><input type="number" id="transport" name="transport" value="{{ user_budget.budget.transport | default(0) }}" step="0.01" min="0"></td>
-        <td><input type="number" id="activities" name="activities" value="{{ user_budget.budget.activities | default(0) }}" step="0.01" min="0"> </td>
-        <td><input type="number" id="spending" name="spending" value="{{ user_budget.budget.spending | default(0) }}" step="0.01" min="0"> </td>      
-        <button type="submit">Update Budget</button>
-      </form>
-      {% set flight = user_budget.budget.flight | default(0) %}
-      {% set hotel = user_budget.budget.hotel | default(0) %}
-      {% set food = user_budget.budget.food | default(0) %}
-      {% set transport = user_budget.budget.transport | default(0) %}
-      {% set activities = user_budget.budget.activities | default(0) %}
-      {% set spending = user_budget.budget.spending | default(0) %}
-      {% set total = flight + hotel + food + transport + activities + spending%}
-      <th>{{ "{:.2f}".format(total) }}</th>
+  {% else %} {% set total = 0 %}
+  <tr>
+    {% set flight = user_budget.budget.flight | default(0) %} {% set hotel =
+    user_budget.budget.hotel | default(0) %} {% set food =
+    user_budget.budget.food | default(0) %} {% set transport =
+    user_budget.budget.transport | default(0) %} {% set activities =
+    user_budget.budget.activities | default(0) %} {% set spending =
+    user_budget.budget.spending | default(0) %} {% set total = flight + hotel +
+    food + transport + activities + spending%}
+    <th scope="row">{{ user_budget.username }}</th>
+    <td>{{flight}}</td>
+    <td>{{hotel}}</td>
+    <td>{{food}}</td>
+    <td>{{transport}}</td>
+    <td>{{activities}}</td>
+    <td>{{spending}}</td>
+    <th>{{ "{:.2f}".format(total) }}</th>
+  </tr>
 
-    {% else %}
-
-    {% set total = 0 %}
-    <tr>
-      {% set flight = user_budget.budget.flight | default(0) %}
-      {% set hotel = user_budget.budget.hotel | default(0) %}
-      {% set food = user_budget.budget.food | default(0) %}
-      {% set transport = user_budget.budget.transport | default(0) %}
-      {% set activities = user_budget.budget.activities | default(0) %}
-      {% set spending = user_budget.budget.spending | default(0) %}
-      {% set total = flight + hotel + food + transport + activities + spending%}
-      <th scope="row">{{ user_budget.username }}</th>
-      <td>{{flight}}</td>
-      <td>{{hotel}}</td>
-      <td>{{food}}</td>
-      <td>{{transport}}</td>
-      <td>{{activities}}</td>
-      <td>{{spending}}</td>
-      <th>{{ "{:.2f}".format(total) }}</th>
-    </tr>
-
-    {% endif %}
-    {% endfor %}
-
+  {% endif %} {% endfor %}
 </table>
-
 
 {% endblock %}

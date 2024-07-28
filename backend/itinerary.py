@@ -5,6 +5,8 @@ from backend.auth import token_required
 from datetime import datetime
 from bson.objectid import ObjectId
 import uuid
+import random
+import string
 
 itinerary_bp = Blueprint("itinerary", __name__)
 
@@ -35,11 +37,15 @@ def add_itinerary_item(current_user, trip_id):
     return redirect(url_for("itinerary", trip_id=trip_id))
 
 
+def generate_invite_code():
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+
 @itinerary_bp.route("/new", methods=["POST"])
 @token_required
 def create_itinerary(current_user):
     trip_name = request.form.get("trip_name")
-    temp_users=[current_user]
+    temp_users = [current_user]
 
     user_ids = []
 
@@ -47,36 +53,36 @@ def create_itinerary(current_user):
         existing_user = mongo.db.users.find_one({"username": user["username"]})
         user_ids.append(existing_user["_id"])
 
-#    users = data.getlist("users")
     if not trip_name:
         return jsonify({"error": "Invalid input"}), 400
-    
+
     existing_itinerary = mongo.db.itineraries.find_one({"trip_name": trip_name})
     if existing_itinerary:
         flash("Trip already exists!", "warning")
-        return redirect(
-         url_for("trip_detail", trip_id=existing_itinerary["_id"])
-        )
-    
+        return redirect(url_for("trip_detail", trip_id=existing_itinerary["_id"]))
+
     # Create chatroom
     chatroom_id = mongo.db.chatrooms.insert_one({"chat_logs": []}).inserted_id
     budget = [
-    {
-        "user_id": user_id,
-        "flight": 0,
-        "hotel": 0,
-        "food": 0,
-        "transport": 0,
-        "activities": 0,
-        "spending": 0
-    } for user_id in user_ids
-    ] 
+        {
+            "user_id": user_id,
+            "flight": 0,
+            "hotel": 0,
+            "food": 0,
+            "transport": 0,
+            "activities": 0,
+            "spending": 0,
+        }
+        for user_id in user_ids
+    ]
+    invite_code = generate_invite_code()
     itinerary = {
         "trip_name": trip_name,
         "users": [ObjectId(user_id) for user_id in user_ids],
         "chatroom_id": chatroom_id,
         "itinerary": [],
-        "budget" : budget
+        "budget": budget,
+        "invite_code": invite_code,
     }
 
     itinerary_id = mongo.db.itineraries.insert_one(itinerary).inserted_id
@@ -87,33 +93,30 @@ def create_itinerary(current_user):
             {"_id": ObjectId(user_id)}, {"$push": {"profile.past_trips": itinerary}}
         )
     flash("Trip created successfully!", "success")
-    return redirect(
-         url_for("trip_detail", trip_id=itinerary_id)
-    )
+    return redirect(url_for("trip_detail", trip_id=itinerary_id))
 
 
-    # return redirect(
-    #     url_for("trip_detail", trip_id=itinerary_id, invite_code=invite_code)
-    # )
-
-
-@itinerary_bp.route("/join/<chatroom_id>", methods=["GET"])
+@itinerary_bp.route("/join/", methods=["POST"])
 @token_required
-def join_itinerary(current_user, chatroom_id):
-    itinerary = mongo.db.itineraries.find_one({"chatroom_id": ObjectId(chatroom_id)})
+def join_itinerary_by_invite(current_user):
+    invite_code = request.form.get("invite_code")
+    token = request.cookies.get("x-access-token")
+    if not token:
+        flash("Please log in to join the itinerary.", "warning")
+        return redirect(url_for("auth.login", next=request.url))
+
+    itinerary = mongo.db.itineraries.find_one({"invite_code": invite_code})
     if not itinerary:
-        return jsonify({"error": "Invalid chatroom ID"}), 405
+        flash("Invalid invite code", "danger")
+        return redirect(request.url)
 
     if ObjectId(current_user["_id"]) not in itinerary["users"]:
         mongo.db.itineraries.update_one(
             {"_id": itinerary["_id"]},
             {"$push": {"users": ObjectId(current_user["_id"])}},
         )
-        return jsonify({"message": "You have been added to the itinerary"}), 200
+        flash("You have been added to the itinerary", "success")
+        return redirect(url_for("itinerary", trip_id=itinerary["_id"]))
     else:
-        return jsonify({"message": "You are already part of this itinerary"}), 400
-
-
-def get_invite_link(chatroom_id):
-    base_url = "http://127.0.0.1:5000/itinerary/join/"
-    return f"{base_url}{chatroom_id}"
+        flash("You are already part of this itinerary", "info")
+        return redirect(request.url)

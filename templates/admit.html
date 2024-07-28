@@ -1,16 +1,11 @@
-{% extends "base0.html"%} {% block content %}
-
-{% with messages = get_flashed_messages(with_categories=True) %}
-{% if messages %}
-    <div class="flash-messages">
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-{% endwith %}
+{% extends "base0.html"%} {% block content %} {% with messages =
+get_flashed_messages(with_categories=True) %} {% if messages %}
+<div class="flash-messages">
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %}
 
 <h2>User name and password authentication</h2>
 <form action="{{ url_for('auth.login') }}" method="POST">

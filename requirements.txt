@@ -4,3 +4,4 @@ PyJWT
 pymongo
 flask-cors
 requests
+flask_pymongo
