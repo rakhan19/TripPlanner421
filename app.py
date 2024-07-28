@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from bson.objectid import ObjectId
 import jwt
+from backend.itinerary import generate_invite_code
 
 load_dotenv()
 
@@ -21,8 +22,9 @@ mongo.init_app(app)
 
 from backend.auth import auth_bp, token_required
 from backend.chat import chat_bp
-from backend.itinerary import itinerary_bp, get_invite_link
+from backend.itinerary import itinerary_bp
 from backend.budget import budget_bp
+from jwt.exceptions import ExpiredSignatureError
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(chat_bp, url_prefix="/chat")
@@ -35,11 +37,17 @@ def welcome():
     print("Welcome route accessed")  # Debugging print statement
     token = request.cookies.get("x-access-token")
     if token:
-        print("User already logged in")
-        data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-        username = data["username"]
-        print(f"Token username: {username}")  # Debugging print statement
-        return redirect(url_for("mainpage", username=username))
+        try:
+            print("User already logged in")
+            data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+            username = data["username"]
+            print(f"Token username: {username}")  # Debugging print statement
+            return redirect(url_for("mainpage", username=username))
+        except ExpiredSignatureError:
+            print("Token has expired")  # Debugging print statement
+            return redirect(
+                url_for("auth.login")
+            )  # Redirect to login page or handle accordingly
 
     return render_template("welcome.html")
 
@@ -137,10 +145,7 @@ def trip_detail(current_user, trip_id):
             users.append(user["username"])
     trip["user_names"] = users
 
-    invite_link = get_invite_link(trip["chatroom_id"])
-    return render_template(
-        "trip.html", invite_link=invite_link, trip=trip, user=current_user
-    )
+    return render_template("trip.html", trip=trip, user=current_user)
 
 
 def initialize_database():
@@ -241,6 +246,7 @@ def initialize_database():
                         "spending": 80,
                     },
                 ],
+                "invite_code": generate_invite_code(),
             }
         ).inserted_id
 
