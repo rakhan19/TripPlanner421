@@ -11,10 +11,12 @@
   background-color: white;
   width: calc(100% - 20px);
 }
+
 .autocomplete-item {
   padding: 10px;
   cursor: pointer;
 }
+
 .autocomplete-item:hover {
   background-color: #f0f0f0;
 }
@@ -44,15 +46,15 @@
 }
 
 .chat-form {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 
 .chat-form textarea {
   flex: 1;
-  resize: none;
   border: 1px solid #ccc;
   border-radius: 5px;
+  resize: none;
   padding: 10px;
   margin-right: 10px;
 }
@@ -61,3 +63,5 @@
   border-radius: 5px;
   padding: 10px 20px;
 }
+
+
