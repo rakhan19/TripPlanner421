@@ -111,15 +111,27 @@ def join_itinerary_by_invite(current_user):
         return redirect(request.url)
 
     if ObjectId(current_user["_id"]) not in itinerary["users"]:
+        # Update the itinerary with the new user
         mongo.db.itineraries.update_one(
             {"_id": itinerary["_id"]},
             {"$push": {"users": ObjectId(current_user["_id"])}},
         )
-        # Add the itinerary to the user's past trips
+        # Fetch the updated itinerary
+        updated_itinerary = mongo.db.itineraries.find_one({"_id": itinerary["_id"]})
+
+        # Add the updated itinerary to the new user's past trips
         mongo.db.users.update_one(
             {"_id": ObjectId(current_user["_id"])},
-            {"$push": {"profile.past_trips": itinerary}},
+            {"$push": {"profile.past_trips": updated_itinerary}},
         )
+
+        # Update all existing users' past trips to include the new user
+        for user_id in itinerary["users"]:
+            mongo.db.users.update_one(
+                {"_id": user_id, "profile.past_trips._id": itinerary["_id"]},
+                {"$set": {"profile.past_trips.$": updated_itinerary}},
+            )
+
         flash("You have been added to the itinerary", "success")
         return redirect(url_for("itinerary", trip_id=itinerary["_id"]))
     else:

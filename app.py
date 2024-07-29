@@ -49,28 +49,38 @@ def welcome():
                 url_for("auth.login")
             )  # Redirect to login page or handle accordingly
 
-    return render_template("welcome.html")
+    return render_template(
+        "welcome.html", google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY")
+    )
 
 
 @app.route("/admit")
 def admit():
-    return render_template("admit.html")
+    return render_template(
+        "admit.html", google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY")
+    )
 
 
 @app.route("/signup")
 def signup():
-    return render_template("signup.html")
+    return render_template(
+        "signup.html", google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY")
+    )
 
 
 @app.route("/main")
 def main():
     print("Main route accessed")  # Debugging print statement
-    return render_template("mainpage.html")
+    return render_template(
+        "mainpage.html", google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY")
+    )
 
 
 @app.route("/trip")
 def trip(username, trip_name):
-    return render_template("trip.html")
+    return render_template(
+        "trip.html", google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY")
+    )
 
 
 @app.route("/trip/<trip_id>/chat")
@@ -79,7 +89,12 @@ def trip_chat(current_user, trip_id):
     trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
-    return render_template("trip_chat.html", trip=trip, user=current_user)
+    return render_template(
+        "trip_chat.html",
+        trip=trip,
+        user=current_user,
+        google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY"),
+    )
 
 
 @app.route("/trip/<trip_id>/budget")
@@ -95,7 +110,11 @@ def budget(current_user, trip_id):
             user_budgets.append(user_budget)
 
     return render_template(
-        "budget.html", trip=trip, user_budgets=user_budgets, user=current_user
+        "budget.html",
+        trip=trip,
+        user_budgets=user_budgets,
+        user=current_user,
+        google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY"),
     )
 
 
@@ -105,7 +124,12 @@ def itinerary(current_user, trip_id):
     trip = mongo.db.itineraries.find_one({"_id": ObjectId(trip_id)})
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
-    return render_template("itinerary.html", trip=trip, user=current_user)
+    return render_template(
+        "itinerary.html",
+        trip=trip,
+        user=current_user,
+        google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY"),
+    )
 
 
 @app.route("/mainpage/<username>")
@@ -125,7 +149,10 @@ def mainpage(current_user, username):
         trip["user_names"] = user_names
 
     return render_template(
-        "mainpage.html", user=user, trip=user["profile"]["past_trips"]
+        "mainpage.html",
+        user=user,
+        trip=user["profile"]["past_trips"],
+        google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY"),
     )
 
 
@@ -145,7 +172,13 @@ def trip_detail(current_user, trip_id):
             users.append(user["username"])
     trip["user_names"] = users
 
-    return render_template("trip.html", trip=trip, user=current_user)
+    return render_template(
+        "trip.html",
+        trip=trip,
+        user=current_user,
+        rapidapi_key=os.getenv("RAPIDAPI_KEY"),
+        google_maps_api_key=os.getenv("GOOGLEMAPS_API_KEY"),
+    )
 
 
 def initialize_database():

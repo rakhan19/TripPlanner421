@@ -23,6 +23,10 @@
       >Show Attractions</label
     >
   </div>
+  <div class="form-check form-switch">
+    <input class="form-check-input" type="checkbox" id="toggleHotels" />
+    <label class="form-check-label" for="toggleHotels">Show Hotels</label>
+  </div>
 </nav>
 
 {% with messages = get_flashed_messages(with_categories=True) %} {% if messages
@@ -54,6 +58,17 @@
   <button onclick="copyInviteCode()">Invite Someone To This Itinerary</button>
 </div>
 
+<form
+  action="{{ url_for('itinerary.add_itinerary_item', trip_id=trip._id) }}"
+  method="POST"
+>
+  <input type="text" name="activity" placeholder="Activity" required />
+  <input type="text" name="location" placeholder="Location" required />
+  <input type="datetime-local" name="time" placeholder="Time" required />
+  <textarea name="notes" placeholder="Notes"></textarea>
+  <button type="submit">Add Item</button>
+</form>
+
 <!-- Input field for location autocomplete -->
 <input
   id="autocomplete"
@@ -64,9 +79,12 @@
 />
 
 <!-- Container for the map -->
+<script>
+  window.RAPIDAPI_KEY = "{{ rapidapi_key }}";
+</script>
 <div id="map" style="height: 500px; width: 100%"></div>
 
-<!-- Table to display restaurants and attractions -->
+<!-- Table to display restaurants, attractions, and hotels -->
 <table id="places-table" class="table">
   <thead>
     <tr>
@@ -83,7 +101,6 @@
 </table>
 
 <!-- Link to the map.js file -->
-<script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 <script>
   function copyInviteLink() {
