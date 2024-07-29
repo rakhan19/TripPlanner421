@@ -7,7 +7,7 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
     url: 'https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary',
     params: { bl_latitude, tr_latitude, bl_longitude, tr_longitude },
     headers: {
-      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
+      'x-rapidapi-key': window.RAPIDAPI_KEY,
       'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
     }
   };
@@ -29,7 +29,7 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
     url: 'https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary',
     params: { bl_latitude, tr_latitude, bl_longitude, tr_longitude },
     headers: {
-      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
+      'x-rapidapi-key': window.RAPIDAPI_KEY,
       'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
     }
   };
@@ -51,7 +51,7 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
     url: 'https://travel-advisor.p.rapidapi.com/hotels/list-in-boundary',
     params: { bl_latitude, tr_latitude, bl_longitude, tr_longitude },
     headers: {
-      'x-rapidapi-key': '97189cc006mshcc41988e5682cc9p1049bejsn943f1811da0f',
+      'x-rapidapi-key': window.RAPIDAPI_KEY,
       'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
     }
   };
@@ -93,6 +93,7 @@ async function fetchRestaurants(bl_latitude, tr_latitude, bl_longitude, tr_longi
       document.querySelector('input[name="activity"]').value = place.name || '';
       document.querySelector('input[name="location"]').value = place.location_string || 'Unknown City';
       document.querySelector('textarea[name="notes"]').value = place.web_url || 'No website available';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     tableBody.appendChild(row);
   });

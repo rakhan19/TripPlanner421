@@ -167,7 +167,7 @@
     {% block content %} {% endblock %}
     <!-- Google Maps JavaScript API (deferred loading) -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJmoy_vPg8vKjB-cj1Oy8ix2HfOgLWeTQ&libraries=places&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initMap"
       async
       defer
     ></script>
