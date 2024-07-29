@@ -68,7 +68,6 @@ def register():
         response = redirect(url_for("mainpage", username=username))
         response.set_cookie("x-access-token", token)
 
-        flash("User registered successfully", "success")
         return response
 
     return render_template("signup.html")
