@@ -5,3 +5,9 @@ pymongo
 flask-cors
 requests
 flask_pymongo
+Werkzeug
+Jinja2
+itsdangerous
+click
+python-dotenv
+bson
