@@ -1,5 +1,5 @@
 {% extends "base1.html" %} {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light" style="padding:10px; opacity: 0.8">
   <ul class="navbar-nav">
     <li class="nav-item">
       <a class="nav-link" href="{{ url_for('trip_detail', trip_id=trip._id) }}"
@@ -8,7 +8,7 @@
     </li>
   </ul>
 </nav>
-<h1>Budget for {{ trip.trip_name }}</h1>
+<h1 class="display-5">{{ trip.trip_name }} - Budget</h1>
 <table class="table" id="budget">
   <thead>
     <tr>

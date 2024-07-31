@@ -295,7 +295,7 @@ def initialize_database():
             f"Dummy itinerary added to past trips for both test users with itinerary_id: {itinerary_id}"
         )
     else:
-        chatroom_id = existing_itinerary["chatroom_id"]
+        # chatroom_id = existing_itinerary["chatroom_id"]
         print("Dummy itinerary already exists with chatroom_id")
 
 

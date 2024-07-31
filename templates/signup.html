@@ -7,14 +7,53 @@ get_flashed_messages(with_categories=True) %} {% if messages %}
 </div>
 {% endif %} {% endwith %}
 
-<h1>Sign up here</h1>
+<h2 class="display-5 text-center">Sign Up</h2>
 <form action="{{ url_for('auth.register') }}" method="POST">
-  <label for="username">Username</label>
-  <input type="text" name="username" required />
-  <label for="password">Password</label>
-  <input type="password" name="password" required />
-  <label for="email">Email</label>
-  <input type="email" name="email" required />
-  <button type="submit" class="btn btn-info">Sign up</button>
+
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" name="username" class="form-control" required />
+      </div>
+    </div> 
+  </div>
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" name="email" class="form-control" required />
+      </div>
+    </div> 
+  </div>
+
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" name="password" class="form-control" required />
+      </div>   
+    </div>
+  </div>
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <ul style=" font-size: medium;">
+          <p>Password requirements</p>
+          <li>Must have at least one upper case letter</li>
+          <li>Must have at least one lower case letter</li>
+          <li>Must have a number at the end of the password</li>
+          <li>Must be at least 8 characters long</li>
+        </ul>
+      </div>   
+    </div>
+  </div>
+
+  <div class="text-center">
+    <button  type="submit" class="btn btn-primary btn-block mb-4">Sign Up</button>
+    <p class="lead">Already signed up? <a href="{{url_for('auth.login')}}">Sign up</a> here</p>
+  </div>
 </form>
+
+
 {% endblock %}

@@ -44,6 +44,10 @@ def register():
             flash("User already exists", "warning")
             return render_template("signup.html")
 
+        if not checkPassword(password):
+            flash("Did not meet password requirements", "warning")
+            return render_template("signup.html")
+
         hashed_password = generate_password_hash(password)
         user_id = mongo.db.users.insert_one(
             {
@@ -72,6 +76,27 @@ def register():
 
     return render_template("signup.html")
 
+
+def checkPassword(pw):
+    countLow, countUp = 0,0
+    for i in pw:
+        cond1 = i.islower()
+        cond2 = i.isupper()
+        if(cond1 == 1):
+            countLow +=1
+        if(cond2 == 1):
+            countUp +=1
+    if(countLow==0):
+        return False
+    if(countUp==0):
+        return False
+    cond3 = pw[-1].isnumeric()
+    if(cond3 != 1):
+        return False
+    if len(pw) < 8:
+        return False
+    else:
+        return True
 
 @auth_bp.route("/admit", methods=["GET", "POST"])
 def login():

@@ -39,18 +39,36 @@
     ></script>
     <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <!-- Link to your custom CSS file -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
+    <style>
+    body{
+      color:  #343a40;
+      background-color:#F0F0F0;
+      width: 100%;
+      height: 100vh;
+      font-size: large
+    }
+    .main-background {
+      background-image: url("{{ url_for('static', filename='mountains.jpg') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh
+    }
+
+    </style>
     <title>CS421 Project</title>
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="padding: 10px; background-color: #e0f7fa; opacity: 0.8; z-index:1050">
       <ul class="navbar-nav">
-        <nav class="navbar navbar-light bg-light"></nav>
+      
         <a class="nav-link" href="{{ url_for('welcome') }}"
           >Home <span class="sr-only"></span
         ></a>
