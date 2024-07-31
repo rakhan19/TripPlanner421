@@ -1,34 +1,41 @@
 <!-- mainpage.html -->
-{% extends "base1.html" %} {% block content %}
-<div class="container pt-5">
-  <h1 class="display-3">Welcome, {{user.username}}</h1>
+{% extends "base1.html" %}
 
-  <div class="container">
-    <h3 class="display-5">
-      Past Trips:
-    </h3>
+{% block content %}
+<div class="main-background">
+  <div class="container mb-4" style="background-color: #f5f5f5; padding: 20px; border-radius: 20px; opacity: 0.8; max-width: 750px">
+    <h1 class="display-4 text-center">Welcome, {{ user.username }}</h1>
+
+    <div class="text-left mb-4">
+      <h3 class="display-5">Past Trips:</h3>
+    </div>
     
-    {% if user.profile.past_trips %}
-    <ul>
-      {% for trip in user.profile.past_trips %}
-      <li>
-        <a href="{{ url_for('trip_detail', trip_id=trip._id) }}">
-          <strong>Trip Name:</strong> {{ trip.trip_name }}
-        </a>
-        <strong>People Involved:</strong>
-        <ul>
-          {% for user_name in trip.user_names %}
-          <li>{{ user_name }}</li>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        {% if user.profile.past_trips %}
+        <ul class="list-group list-group-flush">
+          {% for trip in user.profile.past_trips %}
+          <li class="list-group-item">
+            <a href="{{ url_for('trip_detail', trip_id=trip._id) }}">
+              <strong>Trip Name:</strong> {{ trip.trip_name }} <br>
+            </a>
+            <strong>People Involved:</strong>
+            <ul>
+              {% for user_name in trip.user_names %}
+              <li>{{ user_name }}</li>
+              {% endfor %}
+            </ul>
+          </li>
           {% endfor %}
         </ul>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No past trips found.</p>
-    {% endif %} 
-  </div>
+        {% else %}
+        <p>No past trips found.</p>
+        {% endif %}
+      </div>
+    </div>
 
+  </div>
 </div>
 
 {% endblock %}
+

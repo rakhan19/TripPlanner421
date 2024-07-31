@@ -18,7 +18,16 @@ get_flashed_messages(with_categories=True) %} {% if messages %}
       </div>
     </div> 
   </div>
-  <div class="row mb-5">
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" name="email" class="form-control" required />
+      </div>
+    </div> 
+  </div>
+
+  <div class="row mb-4">
     <div class="col d-flex justify-content-center">
       <div data-mdb-input-init class="form-outline mb-4">
         <label class="form-label" for="password">Password</label>
@@ -29,10 +38,15 @@ get_flashed_messages(with_categories=True) %} {% if messages %}
   <div class="row mb-4">
     <div class="col d-flex justify-content-center">
       <div data-mdb-input-init class="form-outline mb-4">
-        <label class="form-label" for="email">Email Address</label>
-        <input type="email" name="email" class="form-control" required />
-      </div>
-    </div> 
+        <ul style=" font-size: medium;">
+          <p>Password requirements</p>
+          <li>Must have at least one upper case letter</li>
+          <li>Must have at least one lower case letter</li>
+          <li>Must have a number at the end of the password</li>
+          <li>Must be at least 8 characters long</li>
+        </ul>
+      </div>   
+    </div>
   </div>
 
   <div class="text-center">
