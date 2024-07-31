@@ -38,8 +38,8 @@
 </div>
 {% endif %} {% endwith %}
 
-<h1>{{ trip.trip_name }}</h1>
-<h2>Itinerary</h2>
+<h1 class="display-5">{{ trip.trip_name }}</h1>
+<h2 class="display-6">Itinerary</h2>
 <ul>
   {% for item in trip.itinerary %}
   <li>{{ item.activity }} at {{ item.location }} on {{ item.time }}</li>

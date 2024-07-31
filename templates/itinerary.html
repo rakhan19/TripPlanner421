@@ -8,7 +8,7 @@
     </li>
   </ul>
 </nav>
-<h1>Itinerary</h1>
+<h1 class="display-5">{{trip.trip_name}} - Itinerary</h1>
 
 <table class="table" id="itinerary">
   <thead>
@@ -29,10 +29,10 @@
     </tr>
     {% endfor %}
   </tbody>
-  <h4>
+  <!-- <h4>
     {{user.username}}, here is the current itinerary for the trip:
     {{trip.trip_name}}
-  </h4>
+  </h4> -->
 </table>
 
 {% endblock %}

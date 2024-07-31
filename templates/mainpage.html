@@ -1,27 +1,34 @@
 <!-- mainpage.html -->
 {% extends "base1.html" %} {% block content %}
-<h1>Main Page</h1>
-<p>
-  Username: {{ user.username }} <br />
-  Past Trips:
-</p>
+<div class="container pt-5">
+  <h1 class="display-3">Welcome, {{user.username}}</h1>
 
-{% if user.profile.past_trips %}
-<ul>
-  {% for trip in user.profile.past_trips %}
-  <li>
-    <a href="{{ url_for('trip_detail', trip_id=trip._id) }}">
-      <strong>Trip Name:</strong> {{ trip.trip_name }}
-    </a>
-    <strong>People Involved:</strong>
+  <div class="container">
+    <h3 class="display-5">
+      Past Trips:
+    </h3>
+    
+    {% if user.profile.past_trips %}
     <ul>
-      {% for user_name in trip.user_names %}
-      <li>{{ user_name }}</li>
+      {% for trip in user.profile.past_trips %}
+      <li>
+        <a href="{{ url_for('trip_detail', trip_id=trip._id) }}">
+          <strong>Trip Name:</strong> {{ trip.trip_name }}
+        </a>
+        <strong>People Involved:</strong>
+        <ul>
+          {% for user_name in trip.user_names %}
+          <li>{{ user_name }}</li>
+          {% endfor %}
+        </ul>
+      </li>
       {% endfor %}
     </ul>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>No past trips found.</p>
-{% endif %} {% endblock %}
+    {% else %}
+    <p>No past trips found.</p>
+    {% endif %} 
+  </div>
+
+</div>
+
+{% endblock %}
