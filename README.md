@@ -48,6 +48,12 @@ TripPlanner421 is a web application that helps users plan trips by managing thei
 
 5. **Run the application:**
 
+   In the root of the application, initiate a MongoDB instance:
+   ```bash
+   mongod --dbpath ./backend/data/db
+   ```
+
+   In a separate terminal:
    ```bash
    flask run
    ```
